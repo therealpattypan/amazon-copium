@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Interview Anxiety Manager</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti for the dopamine explosion -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playpen+Sans:wght@400;700&display=round');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0c0f17;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 153, 0, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .font-handwritten {
+            font-family: 'Playpen Sans', cursive, sans-serif;
+        }
+
+        /* Ambient glows */
+        .glow-orange {
+            box-shadow: 0 0 30px rgba(255, 153, 0, 0.15);
+        }
+        
+        .glow-green {
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .glow-red {
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        .animate-wiggle {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+
+        @keyframes sweat {
+            0%, 100% { transform: translateY(0) scaleY(1); opacity: 0; }
+            50% { opacity: 1; }
+            90% { transform: translateY(10px) scaleY(0.8); opacity: 0; }
+        }
+        .sweat-drop {
+            animation: sweat 2s infinite;
+        }
+
+        /* Extreme panic shakes */
+        @keyframes panic-shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-2px, -1px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(2px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .panic-mode {
+            animation: panic-shake 0.15s infinite;
+            background-color: #3b0712 !important;
+        }
+
+        .red-alert-flash {
+            animation: flash-red-bg 0.8s infinite alternate;
+        }
+
+        @keyframes flash-red-bg {
+            0% { background-color: #0c0f17; }
+            100% { background-color: #580514; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 overflow-x-hidden text-slate-100 selection:bg-orange-500/30 selection:text-orange-300">
+
+    <div id="main-container" class="relative w-full max-w-md transition-all duration-500">
+        
+        <!-- Outer Decorative Grid Accent -->
+        <div class="absolute -inset-1 rounded-[2.5rem] bg-gradient-to-r from-orange-500/20 to-emerald-500/20 blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+
+        <!-- Main Card interface -->
+        <div id="app-card" class="relative px-6 py-8 bg-slate-900/90 border border-slate-800 rounded-[2rem] shadow-2xl backdrop-blur-xl transition-all duration-500">
+            
+            <!-- Header Section with Brand Joke -->
+            <div class="flex flex-col items-center text-center">
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-semibold tracking-wider uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                    Amazon Copium Reactor v2.0
+                </div>
+                
+                <h1 class="text-3xl font-extrabold mt-4 tracking-tight text-white select-none">
+                    amzn<span class="text-orange-500 relative">counter<span class="absolute -bottom-1 left-0 w-full h-1 bg-orange-500/20 rounded-full"></span></span>
+                </h1>
+                
+                <!-- The Classic Amazon Smile Curve with a cheeky wink -->
+                <div class="relative w-28 h-6 text-orange-500 mt-1.5 hover:scale-105 transition-transform duration-200 cursor-help" title="Trust the process.">
+                    <svg viewBox="0 0 100 25" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M10 5C30 20 70 20 90 5" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+                        <path d="M81 7L90 5L85 14" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Mascot: "Packy the Cardboard Box" -->
+            <div class="my-6 flex justify-center relative">
+                <div id="packy-mascot" class="animate-float relative w-32 h-32 bg-[#e3a857] rounded-2xl border-4 border-[#b47a2b] shadow-lg flex flex-col justify-between p-3 overflow-hidden transition-all duration-300">
+                    
+                    <!-- Box Packing Tape Stripe -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-7 h-full bg-[#8c5211]/30 z-0"></div>
+                    
+                    <!-- Sweat Drop (Hidden initially, shown in panic/sweat) -->
+                    <div id="sweat" class="hidden absolute top-4 right-3 w-2 h-4 bg-cyan-300 rounded-full z-20 sweat-drop"></div>
+
+                    <!-- Top Flap details -->
+                    <div class="flex justify-between w-full z-10 relative">
+                        <div class="w-10 h-3 border-b-2 border-r-2 border-[#b47a2b]/60 rounded-br bg-[#d89745]"></div>
+                        <div class="w-10 h-3 border-b-2 border-l-2 border-[#b47a2b]/60 rounded-bl bg-[#d89745]"></div>
+                    </div>
+
+                    <!-- Face Elements -->
+                    <div class="flex flex-col items-center justify-center flex-grow z-10">
+                        <!-- Eyes Container -->
+                        <div id="packy-eyes" class="flex justify-around w-16 mb-2">
+                            <!-- Left Eye -->
+                            <div class="relative w-3.5 h-3.5 bg-slate-900 rounded-full flex items-center justify-center transition-all duration-300">
+                                <div class="absolute top-0.5 left-0.5 w-1 h-1 bg-white rounded-full"></div>
+                            </div>
+                            <!-- Right Eye -->
+                            <div class="relative w-3.5 h-3.5 bg-slate-900 rounded-full flex items-center justify-center transition-all duration-300">
+                                <div class="absolute top-0.5 left-0.5 w-1 h-1 bg-white rounded-full"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mouth -->
+                        <div id="packy-mouth" class="w-5 h-2.5 border-b-4 border-slate-900 rounded-b-full transition-all duration-300"></div>
+                    </div>
+
+                    <!-- Small Prime logo parody -->
+                    <div class="flex justify-between items-end w-full text-[9px] font-bold text-[#8c5211] z-10">
+                        <span>FRAGILE</span>
+                        <span class="text-[7px]">vibe check: OK</span>
+                    </div>
+                </div>
+
+                <!-- Speech Bubble for Packy -->
+                <div class="absolute -right-4 -top-2 bg-slate-800 border border-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-2xl rounded-bl-none shadow-md max-w-[120px] font-handwritten transition-all duration-300 select-none">
+                    <p id="packy-bubble">No news is good news... right?</p>
+                </div>
+            </div>
+
+            <!-- The Master Countdown Engine -->
+            <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800/80 mb-6 text-center shadow-inner relative overflow-hidden">
+                <!-- Watermark Label -->
+                <p id="countdown-label" class="text-xs text-orange-400/80 font-semibold tracking-wider uppercase mb-3">
+                    Time Left Until Day 5 Mark (May 27, 5 PM)
+                </p>
+
+                <!-- Numeric Readout -->
+                <div class="grid grid-cols-3 gap-2 relative z-10">
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                        <span id="hours-val" class="text-3xl font-bold text-white font-mono">00</span>
+                        <span class="block text-[9px] text-slate-500 uppercase font-semibold mt-1">Hours</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                        <span id="mins-val" class="text-3xl font-bold text-white font-mono">00</span>
+                        <span class="block text-[9px] text-slate-500 uppercase font-semibold mt-1">Mins</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                        <span id="secs-val" class="text-3xl font-bold text-orange-400 font-mono animate-pulse">00</span>
+                        <span class="block text-[9px] text-slate-500 uppercase font-semibold mt-1">Secs</span>
+                    </div>
+                </div>
+
+                <!-- Deadline Notice & Extension Indicator -->
+                <div class="mt-3 text-[11px] text-slate-400 flex items-center justify-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Target: <strong id="target-display" class="text-slate-300">May 27th, 5:00 PM</strong></span>
+                </div>
+            </div>
+
+            <!-- Copium Multiplier Counter -->
+            <div class="mb-6 flex items-center justify-between px-4 py-2.5 bg-slate-950/40 border border-slate-800/60 rounded-xl">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                    <span class="text-xs text-slate-400">Auto-Extensions Triggered:</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span id="extension-badge" class="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 rounded-md text-xs font-bold font-mono">0</span>
+                    <span class="text-[10px] text-slate-500 italic">Day(s)</span>
+                </div>
+            </div>
+
+            <!-- Interactive Action Panel -->
+            <div class="space-y-3">
+                <!-- Success Trigger -->
+                <button onclick="triggerOfferCelebration()" class="w-full relative group overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-emerald-500/20 active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 text-base">
+                    <span class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl transform translate-x-12 -translate-y-8 group-hover:scale-125 transition-all duration-500"></span>
+                    <span class="text-xl">🎉</span> YES, OFFER RECEIVED!
+                </button>
+
+                <!-- Trigger Failure Panel (Panic Mode) -->
+                <button onclick="triggerPanicAlert()" class="w-full bg-rose-600/15 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/25 hover:border-transparent py-3.5 px-6 rounded-2xl active:scale-[0.98] transition-all duration-200 cursor-pointer text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    No / Ghosted (Simulate Despair)
+                </button>
+
+                <!-- Manual Delay Injector (Funny Feature) -->
+                <button onclick="injectCopium()" class="w-full bg-slate-800/40 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 text-slate-400 hover:text-slate-300 py-2 px-4 rounded-xl active:scale-[0.98] transition-all duration-200 cursor-pointer text-[11px] font-semibold tracking-wide flex items-center justify-center gap-1">
+                    💉 Inject Emergency Copium (+1 Day Manual Delay)
+                </button>
+            </div>
+
+            <!-- Footer Meta Details -->
+            <div class="mt-6 text-center">
+                <p class="text-[10px] text-slate-600">
+                    If deadline passes <strong>8:00 PM</strong> without input, automatic copium reserves kick in and shift target by 24h.
+                </p>
+                <div class="mt-3 flex justify-center gap-3">
+                    <button onclick="resetSystem()" class="text-[9px] text-slate-600 hover:text-orange-400 underline transition cursor-pointer">
+                        Reset Timeline Data
+                    </button>
+                    <span class="text-slate-700">•</span>
+                    <button onclick="toggleMute()" id="sound-toggle" class="text-[9px] text-slate-600 hover:text-cyan-400 transition cursor-pointer">
+                        Sound Effects: ON
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Disaster Panic Mode Overlay -->
+        <div id="disaster-overlay" class="hidden absolute inset-0 bg-red-950/95 border border-red-500 rounded-[2rem] z-30 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md">
+            
+            <div class="w-16 h-16 bg-red-600/20 border-2 border-red-500 rounded-full flex items-center justify-center mb-4 animate-ping absolute"></div>
+            <div class="w-16 h-16 bg-red-600/30 border-2 border-red-500 rounded-full flex items-center justify-center mb-4 relative z-40">
+                <span class="text-3xl">⚠️</span>
+            </div>
+
+            <h2 class="text-2xl font-black text-red-500 uppercase tracking-widest mb-1">
+                SYSTEM FAILURE
+            </h2>
+            <p class="text-sm font-handwritten text-red-200 max-w-[280px] mb-6">
+                "Wait, maybe the recruiter is on vacation? Maybe they are preparing a massive compensation packages? YES, THAT IS IT."
+            </p>
+
+            <div class="bg-black/40 border border-red-900/50 p-3 rounded-xl mb-6 text-left w-full">
+                <p class="text-[10px] text-red-400 uppercase font-bold mb-1">Re-routing procedures:</p>
+                <ul class="text-[11px] text-red-300/90 list-disc list-inside space-y-1">
+                    <li>Start LeetCode Medium grind</li>
+                    <li>Update LinkedIn header to "Open to Work"</li>
+                    <li>Deny truth, wait for auto-extension</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 w-full">
+                <button onclick="overridePanic()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition active:scale-95 cursor-pointer shadow-lg shadow-red-900/50">
+                    Apply Industrial-Grade Copium (+1 Day)
+                </button>
+                <button onclick="exitPanic()" class="w-full bg-transparent hover:bg-white/5 border border-white/10 text-slate-400 hover:text-white py-2 px-4 rounded-xl text-xs transition cursor-pointer">
+                    Dismiss Disaster
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Sound Effects Core (Web Audio API) ---
+        let audioMuted = false;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioMuted) return;
+            try {
+                const now = audioCtx.currentTime;
+                if (type === 'success') {
+                    // Arpeggio chime
+                    const notes = [261.63, 329.63, 392.00, 523.25, 659.25]; // C4, E4, G4, C5, E5
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + (idx * 0.08));
+                        gain.gain.setValueAtTime(0.15, now + (idx * 0.08));
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + (idx * 0.08) + 0.4);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + (idx * 0.08));
+                        osc.stop(now + (idx * 0.08) + 0.5);
+                    });
+                } else if (type === 'panic') {
+                    // Falling siren
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.8);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.0001, now + 0.8);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                } else if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'inject') {
+                    // Sci-fi sweep upward
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.0001, now + 0.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                }
+            } catch (err) {
+                console.warn("Audio Context blocked or unsupported:", err);
+            }
+        }
+
+        function toggleMute() {
+            audioMuted = !audioMuted;
+            document.getElementById('sound-toggle').innerText = `Sound Effects: ${audioMuted ? 'OFF' : 'ON'}`;
+            playSound('click');
+        }
+
+        // --- Core Time Management Logic ---
+        const BASELINE_TARGET_STR = "2026-05-27T17:00:00"; // Target is May 27th, 5:00 PM
+        
+        function getTargetState() {
+            let localTarget = localStorage.getItem('amzn_target');
+            let localExtensions = localStorage.getItem('amzn_extensions_v2');
+
+            if (!localTarget) {
+                // Initialize default values
+                let baseTarget = new Date(BASELINE_TARGET_STR);
+                localStorage.setItem('amzn_target', baseTarget.toISOString());
+                localStorage.setItem('amzn_extensions_v2', '0');
+                return { target: baseTarget, extensions: 0 };
+            }
+
+            return {
+                target: new Date(localTarget),
+                extensions: parseInt(localExtensions || '0', 10)
+            };
+        }
+
+        let appState = getTargetState();
+
+        function saveState() {
+            localStorage.setItem('amzn_target', appState.target.toISOString());
+            localStorage.setItem('amzn_extensions_v2', appState.extensions.toString());
+        }
+
+        // Auto Extension engine
+        function runTimerTick() {
+            const now = new Date();
+            
+            // Generate the auto-extension cutoff threshold (8:00 PM on the current target's day)
+            const cutoffTime = new Date(appState.target);
+            cutoffTime.setHours(20, 0, 0, 0); // 8:00:00 PM
+
+            // If we have surpassed 8:00 PM of the current target deadline day:
+            if (now >= cutoffTime) {
+                // Shift target 1 day forward
+                appState.target.setDate(appState.target.getDate() + 1);
+                appState.extensions += 1;
+                saveState();
+                playSound('inject');
+                triggerAutoExtensionEffects();
+            }
+
+            // Calculate countdown values
+            const timeDiff = appState.target - now;
+
+            // Update DOM displays
+            const daysCountElement = document.getElementById('extension-badge');
+            daysCountElement.innerText = appState.extensions;
+
+            // Handle display target label
+            const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('target-display').innerText = appState.target.toLocaleString('en-US', options);
+
+            if (timeDiff <= 0) {
+                // If past 5:00 PM but not yet 8:00 PM
+                document.getElementById('hours-val').innerText = "00";
+                document.getElementById('mins-val').innerText = "00";
+                document.getElementById('secs-val').innerText = "00";
+                document.getElementById('countdown-label').innerText = "⏳ Awaiting Decision Loop (Extended At 8PM)";
+                return;
+            }
+
+            document.getElementById('countdown-label').innerText = "Time Left Until Day 5 Mark (May 27, 5 PM)";
+
+            // Math for Days/Hours/Minutes/Seconds
+            const totalHours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const totalMinutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const totalSeconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById('hours-val').innerText = String(totalHours).padStart(2, '0');
+            document.getElementById('mins-val').innerText = String(totalMinutes).padStart(2, '0');
+            document.getElementById('secs-val').innerText = String(totalSeconds).padStart(2, '0');
+        }
+
+        // Mascot and speech box interaction triggers
+        const mascotBubble = document.getElementById('packy-bubble');
+        const mascot = document.getElementById('packy-mascot');
+        const eyes = document.getElementById('packy-eyes');
+        const mouth = document.getElementById('packy-mouth');
+        const sweat = document.getElementById('sweat');
+
+        function updateMascotFace(state) {
+            if (state === 'default') {
+                mascot.style.backgroundColor = '#e3a857';
+                mascot.style.borderColor = '#b47a2b';
+                sweat.classList.add('hidden');
+                eyes.innerHTML = `
+                    <div class="relative w-3.5 h-3.5 bg-slate-900 rounded-full flex items-center justify-center transition">
+                        <div class="absolute top-0.5 left-0.5 w-1 h-1 bg-white rounded-full"></div>
+                    </div>
+                    <div class="relative w-3.5 h-3.5 bg-slate-900 rounded-full flex items-center justify-center transition">
+                        <div class="absolute top-0.5 left-0.5 w-1 h-1 bg-white rounded-full"></div>
+                    </div>
+                `;
+                mouth.className = "w-5 h-2.5 border-b-4 border-slate-900 rounded-b-full transition";
+                mascotBubble.innerText = "No news is good news... right?";
+            } else if (state === 'success') {
+                mascot.style.backgroundColor = '#10b981';
+                mascot.style.borderColor = '#047857';
+                sweat.classList.add('hidden');
+                eyes.innerHTML = `
+                    <span class="text-xl font-bold leading-none text-slate-950">^</span>
+                    <span class="text-xl font-bold leading-none text-slate-950">^</span>
+                `;
+                mouth.className = "w-7 h-4 bg-slate-950 rounded-b-full transition";
+                mascotBubble.innerText = "LET'S GO! I KNEW IT!";
+            } else if (state === 'panic') {
+                mascot.style.backgroundColor = '#f43f5e';
+                mascot.style.borderColor = '#be123c';
+                sweat.classList.remove('hidden');
+                eyes.innerHTML = `
+                    <div class="text-xs font-bold leading-none text-slate-950 font-mono">X</div>
+                    <div class="text-xs font-bold leading-none text-slate-950 font-mono">X</div>
+                `;
+                mouth.className = "w-6 h-1 bg-slate-950 rounded-full transition";
+                mascotBubble.innerText = "SWEATING INTENSIFIES!";
+            }
+        }
+
+        // Event action: YES (Celebrate)
+        function triggerOfferCelebration() {
+            playSound('success');
+            updateMascotFace('success');
+            
+            // Clean up card boundaries
+            const card = document.getElementById('app-card');
+            card.classList.remove('glow-orange', 'glow-red');
+            card.classList.add('glow-green', 'border-emerald-500/50');
+
+            // Fire epic confetti bursts
+            const end = Date.now() + (5 * 1000);
+            const colors = ['#10b981', '#34d399', '#6ee7b7', '#ff9900'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 4,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 4,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // Event action: PANIC
+        function triggerPanicAlert() {
+            playSound('panic');
+            updateMascotFace('panic');
+            
+            // Shake mascot
+            mascot.classList.add('animate-wiggle');
+
+            // Show disaster overlay and run flashes
+            const overlay = document.getElementById('disaster-overlay');
+            overlay.classList.remove('hidden');
+            document.body.classList.add('red-alert-flash');
+        }
+
+        function exitPanic() {
+            playSound('click');
+            document.body.classList.remove('red-alert-flash');
+            document.getElementById('disaster-overlay').classList.add('hidden');
+            mascot.classList.remove('animate-wiggle');
+            updateMascotFace('default');
+        }
+
+        // Add 1 manual Copium day
+        function injectCopium() {
+            playSound('inject');
+            appState.target.setDate(appState.target.getDate() + 1);
+            appState.extensions += 1;
+            saveState();
+            
+            // Play physical jolt to the card
+            const card = document.getElementById('app-card');
+            card.classList.add('scale-95');
+            setTimeout(() => card.classList.remove('scale-95'), 150);
+
+            // Pop mini celebration-ish effect for delusion success
+            confetti({
+                particleCount: 15,
+                spread: 40,
+                origin: { y: 0.6 }
+            });
+
+            mascotBubble.innerText = "Target shifted! Safe for 24 hours.";
+            runTimerTick();
+        }
+
+        // Special loop inside overlay when coping
+        function overridePanic() {
+            injectCopium();
+            exitPanic();
+        }
+
+        // Notify user subtle warning for automatic loops
+        function triggerAutoExtensionEffects() {
+            mascotBubble.innerText = "Alert! Automatically pushed deadline back! 🧠";
+            confetti({
+                particleCount: 20,
+                angle: 90,
+                spread: 80,
+                colors: ['#06b6d4', '#22d3ee']
+            });
+        }
+
+        // Complete Reset
+        function resetSystem() {
+            if (confirm("Reset current anxiety tracking details?")) {
+                localStorage.clear();
+                appState.target = new Date(BASELINE_TARGET_STR);
+                appState.extensions = 0;
+                saveState();
+                updateMascotFace('default');
+                document.getElementById('app-card').className = "relative px-6 py-8 bg-slate-900/90 border border-slate-800 rounded-[2rem] shadow-2xl backdrop-blur-xl transition-all duration-500";
+                exitPanic();
+                runTimerTick();
+                playSound('click');
+            }
+        }
+
+        // Run updates
+        setInterval(runTimerTick, 1000);
+        runTimerTick();
+    </script>
+</body>
+</html>
