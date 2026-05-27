@@ -584,7 +584,7 @@
 
         // Complete Reset
         function resetSystem() {
-            if (confirm("Reset current anxiety tracking details?")) {
+            if (confirm("Reset current tracking details?")) {
                 localStorage.clear();
                 appState.target = new Date(BASELINE_TARGET_STR);
                 appState.extensions = 0;
